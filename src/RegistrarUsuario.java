@@ -11,6 +11,7 @@ public class RegistrarUsuario {
     private JPasswordField clave;
     JPanel rootPanel;
     private JLabel ID;
+
     private List<String> usuarios;
     private List<String> claves;
 
@@ -27,16 +28,18 @@ public class RegistrarUsuario {
 
 
         if (!usuarios.isEmpty()) {
-            int lastInsertedID = usuarios.size()+1;
-            ID.setText("ID: " + lastInsertedID);
+            int lastInsertedID = usuarios.size() + 1;
+            ID.setText(" " + lastInsertedID);
         }
 
         guardarButton.addActionListener(e -> {
+            String idText = ID.getText().trim(); // Eliminamos espacios en blanco antes y después del ID
             String usuarioText = usuario.getText();
             String claveText = new String(clave.getPassword());
 
+            int id = Integer.parseInt(idText); // Convertimos el ID a entero
 
-            int lastInsertedID = guardarUsuarioEnBaseDeDatos(usuarioText, claveText);
+            int lastInsertedID = guardarUsuarioEnBaseDeDatos(id, usuarioText, claveText);
 
             ID.setText("ID: " + lastInsertedID);
 
@@ -63,19 +66,20 @@ public class RegistrarUsuario {
         }
     }
 
-    private int guardarUsuarioEnBaseDeDatos(String usuario, String clave) {
+    private int guardarUsuarioEnBaseDeDatos(int id, String usuario, String clave) {
         try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
-             PreparedStatement stmt = conn.prepareStatement("INSERT INTO Usuarios (Usuario, Clave) VALUES (?, ?)",
+             PreparedStatement stmt = conn.prepareStatement("INSERT INTO Usuarios (ID, Usuario, Clave) VALUES (?, ?, ?)",
                      Statement.RETURN_GENERATED_KEYS)) {
-            stmt.setString(1, usuario);
-            stmt.setString(2, clave);
+            stmt.setInt(1, id);
+            stmt.setString(2, usuario);
+            stmt.setString(3, clave);
             stmt.executeUpdate();
 
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-                    return generatedKeys.getInt(1); // Get the last inserted ID
+                    return generatedKeys.getInt(1);
                 } else {
-                    throw new SQLException("Creating user failed, no ID obtained.");
+                    throw new SQLException("No se pudo crear el usuario, no se obtuvo ninguna identificación.");
                 }
             }
         } catch (SQLException e) {

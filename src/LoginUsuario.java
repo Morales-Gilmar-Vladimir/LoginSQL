@@ -2,7 +2,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,15 +14,16 @@ public class LoginUsuario {
     private JButton inicioBoton;
     private JButton registrarUsuarioButton;
     private JPanel rootPanel;
+    private JButton actualizarDatosButton;
 
     private List<String> usuarios;
     private List<String> claves;
 
 
-    private static final String DB_URL = "jdbc:mysql://localhost/Registro";
-    private static final String USER = "root";
-    private static final String PASS = "root_bas3";
-    private static final String QUERY = "SELECT * FROM Usuarios";
+    private static final String DB_URL = "jdbc:mysql://localhost/Registro"; //Esta es la URL de la cadena de conexion
+    private static final String USER = "root"; // Usuario
+    private static final String PASS = "root_bas3"; //Contraseña
+    private static final String QUERY = "SELECT * FROM Usuarios"; //La sentencia SQL
 
     public LoginUsuario() {
         usuarios = new ArrayList<>();
@@ -54,8 +54,18 @@ public class LoginUsuario {
         registrarUsuarioButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JFrame frame = new JFrame("Registrar Usuario");
+                JFrame frame = new JFrame("Registrar");
                 frame.setContentPane(new RegistrarUsuario().rootPanel);
+                frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                frame.pack();
+                frame.setVisible(true);
+            }
+        });
+        actualizarDatosButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFrame frame = new JFrame("Actualizar");
+                frame.setContentPane(new ActualizarDatos().rootPanel);
                 frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                 frame.pack();
                 frame.setVisible(true);
